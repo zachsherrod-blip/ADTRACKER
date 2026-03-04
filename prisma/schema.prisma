@@ -1,0 +1,96 @@
+// This is your Prisma schema file
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id         Int      @id @default(autoincrement())
+  brandName  String?  @map("brand_name")
+  domain     String   @unique
+  pageName   String?  @map("page_name")
+  notes      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  snapshots   BrandSnapshot[]
+  scrapeErrors ScrapeError[]
+
+  @@map("brands")
+}
+
+model Run {
+  id            Int      @id @default(autoincrement())
+  startedAt     DateTime @default(now()) @map("started_at")
+  finishedAt    DateTime? @map("finished_at")
+  status        String   @default("running") // running | completed | failed
+  totalBrands   Int      @default(0) @map("total_brands")
+  succeeded     Int      @default(0)
+  failed        Int      @default(0)
+
+  snapshots    BrandSnapshot[]
+  scrapeErrors ScrapeError[]
+
+  @@map("runs")
+}
+
+model BrandSnapshot {
+  id              Int      @id @default(autoincrement())
+  brandId         Int      @map("brand_id")
+  runId           Int      @map("run_id")
+  snapshotDate    DateTime @map("snapshot_date")
+  activeAdsCount  Int?     @map("active_ads_count")
+  newAds7dCount   Int?     @map("new_ads_7d_count")
+  countMethod     String?  @map("count_method") // exact | estimated | partial
+  queryUsed       String?  @map("query_used")
+  sourceUrl       String?  @map("source_url")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  brand  Brand @relation(fields: [brandId], references: [id])
+  run    Run   @relation(fields: [runId], references: [id])
+  ads    Ad[]
+
+  @@map("brand_snapshots")
+}
+
+model Ad {
+  id                 Int      @id @default(autoincrement())
+  brandSnapshotId    Int      @map("brand_snapshot_id")
+  adId               String?  @map("ad_id")
+  startDate          DateTime? @map("start_date")
+  platforms          String?  // JSON array as string
+  primaryText        String?  @map("primary_text")
+  headline           String?
+  description        String?
+  cta                String?
+  destinationUrl     String?  @map("destination_url")
+  creativeType       String?  @map("creative_type") // image | video | carousel
+  creativeThumbUrl   String?  @map("creative_thumb_url")
+  creativeAssetUrl   String?  @map("creative_asset_url")
+  rawJson            String?  @map("raw_json")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  snapshot BrandSnapshot @relation(fields: [brandSnapshotId], references: [id])
+
+  @@map("ads")
+}
+
+model ScrapeError {
+  id           Int      @id @default(autoincrement())
+  brandId      Int      @map("brand_id")
+  runId        Int      @map("run_id")
+  stage        String?
+  errorMessage String?  @map("error_message")
+  stack        String?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  brand Brand @relation(fields: [brandId], references: [id])
+  run   Run   @relation(fields: [runId], references: [id])
+
+  @@map("scrape_errors")
+}

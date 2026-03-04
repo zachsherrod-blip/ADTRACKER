@@ -1,0 +1,43 @@
+{
+  "name": "adtracker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "ui": "next dev",
+    "scrape": "tsx src/cli/run.ts",
+    "scrape:headless": "HEADLESS=true tsx src/cli/run.ts",
+    "all": "tsx src/cli/all.ts",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.14.0",
+    "next": "14.2.5",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "playwright": "^1.44.1",
+    "papaparse": "^5.4.1",
+    "axios": "^1.7.2",
+    "p-limit": "^5.0.0",
+    "p-retry": "^6.2.0",
+    "date-fns": "^3.6.0",
+    "clsx": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/papaparse": "^5.3.14",
+    "typescript": "^5.5.3",
+    "tsx": "^4.16.2",
+    "prisma": "^5.14.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.6"
+  }
+}
